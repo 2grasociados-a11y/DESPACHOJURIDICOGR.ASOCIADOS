@@ -344,8 +344,8 @@
                     <h2 class="text-4xl font-extrabold text-gray-100 section-header-glow">Agenda tu Consulta</h2>
                     <p class="mt-4 text-lg text-gray-300">Garantizamos absoluta confidencialidad desde el primer contacto. Envíenos un mensaje y nos comunicaremos a la brevedad.</p>
                     
-                    <!-- ===== FORMULARIO ACTUALIZADO CON FORMSUBMIT.CO ===== -->
-                    <form action="https://formsubmit.co/2g.r.asociados@gmail.com" method="POST" class="mt-8 grid grid-cols-1 gap-y-6">
+                    <!-- ===== FORMULARIO ACTUALIZADO CON ID ===== -->
+                    <form id="contact-form" action="https://formsubmit.co/2g.r.asociados@gmail.com" method="POST" class="mt-8 grid grid-cols-1 gap-y-6">
                         
                         <!-- --- CONFIGURACIÓN DE FORMSUBMIT --- -->
                         <!-- 1. Asunto para TI -->
@@ -377,8 +377,8 @@
                             <textarea id="message" name="message" rows="5" class="block w-full shadow-md py-4 px-6 placeholder-gray-400 border rounded-xl transition duration-300 bg-gray-800 text-white border-amber-500/50 shadow-xl shadow-amber-500/25 focus:ring-amber-400 focus:border-amber-400 focus:shadow-2xl focus:shadow-amber-500/50" placeholder="Describa su caso brevemente y el área de interés... (Ej: Juicio de Amparo Penal)"></textarea>
                         </div>
 
-                        <!-- El div de estado ya no es necesario -->
-                        <!-- <div id="form-status" class="text-center text-lg font-medium"></div> -->
+                        <!-- ===== DIV PARA MENSAJES DE ESTADO (AÑADIDO OTRA VEZ) ===== -->
+                        <div id="form-status" class="text-center text-lg font-medium mt-4"></div>
 
                         <div>
                             <!-- Botón de Enviar (Estilo Dorado) -->
@@ -451,10 +451,60 @@
         </div>
     </footer>
 
-    <!-- El script de Formspree ya no es necesario -->
-    <!-- <script> ... </script> -->
+    <!-- ===== SCRIPT PARA FORMSUBMIT Y RESET AUTOMÁTICO (AÑADIDO OTRA VEZ) ===== -->
+    <script>
+        window.addEventListener("DOMContentLoaded", function() {
+            // Seleccionar el formulario y el div de estado
+            var form = document.getElementById("contact-form");
+            var status = document.getElementById("form-status");
+
+            // Manejador del evento de envío
+            form.addEventListener("submit", function(event) {
+                event.preventDefault(); // Evitar el envío por defecto
+                var data = new FormData(form);
+                
+                // Enviar datos usando fetch
+                fetch(form.action, {
+                    method: form.method,
+                    body: data,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        // Éxito
+                        status.innerHTML = "¡Mensaje enviado con éxito!";
+                        status.className = "text-center text-lg font-medium text-green-400 mt-4";
+                        form.reset(); // <-- ¡AQUÍ SE BORRA EL FORMULARIO!
+                    } else {
+                        // Error (respuesta no OK)
+                        response.json().then(data => {
+                            if (Object.hasOwn(data, 'errors')) {
+                                status.innerHTML = data["errors"].map(error => error["message"]).join(", ");
+                            } else {
+                                status.innerHTML = "Error al enviar el mensaje.";
+                            }
+                            status.className = "text-center text-lg font-medium text-red-400 mt-4";
+                        })
+                    }
+                }).catch(error => {
+                    // Error de red
+                    status.innerHTML = "Error de red. Intente de nuevo.";
+                    status.className = "text-center text-lg font-medium text-red-400 mt-4";
+                });
+
+                // Limpiar el mensaje de estado después de 5 segundos
+                setTimeout(() => {
+                    status.innerHTML = "";
+                    status.className = "text-center text-lg font-medium mt-4";
+                }, 5000);
+            });
+        });
+    </script>
 
 </body>
 </html>
-  <script src="https://cdn.botpress.cloud/webchat/v3.4/inject.js"></script>
+<script src="https://cdn.botpress.cloud/webchat/v3.4/inject.js"></script>
 <script src="https://files.bpcontent.cloud/2025/11/15/05/20251115053833-IMS2K3PO.js" defer></script>
+    
+
