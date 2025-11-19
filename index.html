@@ -346,6 +346,7 @@
                     
                     <!-- ===== FORMULARIO CONFIGURADO PARA MAKE ===== -->
                     <!-- Nota: Se elimina action y method del HTML porque se manejan en el script -->
+                    <!-- IMPORTANTE: ID del formulario debe coincidir con el script -->
                     <form id="contact-form" class="mt-8 grid grid-cols-1 gap-y-6">
                         
                         <div>
@@ -366,11 +367,13 @@
                         </div>
 
                         <!-- ===== DIV PARA MENSAJES DE ESTADO ===== -->
+                        <!-- ID coincide con el feedback del script -->
                         <div id="form-status" class="text-center text-lg font-medium mt-4"></div>
 
                         <div>
                             <!-- Botón de Enviar (Estilo Dorado) -->
-                            <button type="submit" class="w-full inline-flex justify-center py-4 px-8 border border-amber-500/50 shadow-xl shadow-amber-500/25 text-lg font-bold rounded-xl text-amber-300 bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-400 transition duration-300 transform hover:scale-[1.01] hover:shadow-2xl hover:shadow-amber-500/50">
+                            <!-- Añadimos ID para manipularlo en JS -->
+                            <button type="submit" id="enviar-btn" class="w-full inline-flex justify-center py-4 px-8 border border-amber-500/50 shadow-xl shadow-amber-500/25 text-lg font-bold rounded-xl text-amber-300 bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-400 transition duration-300 transform hover:scale-[1.01] hover:shadow-2xl hover:shadow-amber-500/50">
                                 Enviar Mensaje Confidencial
                             </button>
                         </div>
@@ -439,78 +442,72 @@
         </div>
     </footer>
 
-    <!-- ===== SCRIPT PARA CONEXIÓN CON MAKE (INTEGROMAT) ===== -->
+    <!-- ===== SCRIPT PUENTE PARA MAKE (Integromat) ===== -->
     <script>
+        // Esperamos a que el DOM esté listo
         window.addEventListener("DOMContentLoaded", function() {
             
-            // =================================================================
-            // ⚠️ CONFIGURACIÓN PRINCIPAL ⚠️
-            // PEGA AQUÍ TU URL DE WEBHOOK DE MAKE (Integromat)
-            // =================================================================
-            const webhookUrl = "https://hook.us2.make.com/ljd8udhlsxwcpuowd7mvtooox9ih98fm"; 
-            // Ejemplo: "https://hook.us1.make.com/abc123456..."
-            // =================================================================
+            // Seleccionamos el formulario por el ID "contact-form" (el que ya usabas)
+            document.getElementById('contact-form').addEventListener('submit', function(e) {
+                e.preventDefault(); // Detiene el envío normal
 
-            var form = document.getElementById("contact-form");
-            var status = document.getElementById("form-status");
-
-            form.addEventListener("submit", function(event) {
-                event.preventDefault();
+                const form = e.target;
                 
-                // 1. Verificar que la URL haya sido configurada
-                if (webhookUrl === "COLOCA_AQUI_TU_WEBHOOK_URL_DE_MAKE" || webhookUrl === "") {
-                    alert("⚠️ ERROR DE CONFIGURACIÓN: Por favor edita el código y coloca tu URL de Webhook de Make.");
-                    return;
-                }
+                // URL PROPORCIONADA
+                const webhookURL = 'https://hook.us2.make.com/ljd8udhlsxwcpuowd7mvtooox9ih98fm'; 
+                
+                // Mapeamos los campos del formulario (tus inputs tienen name="name", "email", etc.)
+                // a las variables que espera tu script original ("nombre", "correo", etc.)
+                const data = {
+                    nombre: form.name.value,   // name="name" -> nombre
+                    correo: form.email.value,  // name="email" -> correo
+                    telefono: form.phone.value, // name="phone" -> telefono
+                    mensaje: form.message.value // name="message" -> mensaje
+                };
 
-                // 2. Cambiar estado del botón
-                const submitBtn = form.querySelector('button[type="submit"]');
-                const originalBtnText = submitBtn.innerText;
-                submitBtn.innerText = "Enviando...";
-                submitBtn.disabled = true;
-                submitBtn.classList.add("opacity-50", "cursor-not-allowed");
+                // Seleccionamos los elementos de feedback usando los IDs que definimos
+                const feedback = document.getElementById('form-status'); // Usamos tu ID existente
+                const btn = document.getElementById('enviar-btn');     // Usamos el nuevo ID del botón
 
-                // 3. Preparar los datos como JSON
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
-                // Agregamos fecha y hora automáticamente por si Make lo necesita
-                data.timestamp = new Date().toISOString();
+                // Feedback visual inicial
+                const textoOriginal = btn.innerText;
+                btn.innerText = 'Enviando...';
+                btn.disabled = true;
+                btn.classList.add("opacity-50", "cursor-not-allowed");
+                feedback.innerText = '';
 
-                // 4. Enviar a Make usando fetch
-                fetch(webhookUrl, {
-                    method: "POST",
+                // Envío de datos a Make
+                fetch(webhookURL, {
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json"
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(data)
                 })
                 .then(response => {
-                    if (response.ok || response.status === 200) {
-                        // Éxito
-                        status.innerHTML = "¡Mensaje recibido correctamente!";
-                        status.className = "text-center text-lg font-medium text-green-400 mt-4";
-                        form.reset(); 
+                    // Restaurar botón
+                    btn.innerText = textoOriginal;
+                    btn.disabled = false;
+                    btn.classList.remove("opacity-50", "cursor-not-allowed");
+
+                    if (response.ok) {
+                        feedback.innerText = '¡Mensaje enviado con éxito a Make! Recibirás una respuesta pronto.';
+                        feedback.className = "text-center text-lg font-medium text-green-400 mt-4";
+                        form.reset(); // Limpia el formulario
                     } else {
-                        throw new Error("Error en la respuesta del servidor");
+                        feedback.innerText = 'Error al enviar el mensaje. Verifica tu conexión.';
+                        feedback.className = "text-center text-lg font-medium text-red-400 mt-4";
                     }
                 })
                 .catch(error => {
-                    // Error de red o servidor
-                    console.error("Error:", error);
-                    status.innerHTML = "Hubo un problema al conectar. Intente nuevamente.";
-                    status.className = "text-center text-lg font-medium text-red-400 mt-4";
-                })
-                .finally(() => {
-                    // Restaurar botón
-                    submitBtn.innerText = originalBtnText;
-                    submitBtn.disabled = false;
-                    submitBtn.classList.remove("opacity-50", "cursor-not-allowed");
+                    // Restaurar botón en caso de error
+                    btn.innerText = textoOriginal;
+                    btn.disabled = false;
+                    btn.classList.remove("opacity-50", "cursor-not-allowed");
 
-                    // Limpiar mensaje después de 5 segundos
-                    setTimeout(() => {
-                        status.innerHTML = "";
-                        status.className = "text-center text-lg font-medium mt-4";
-                    }, 5000);
+                    feedback.innerText = 'Error de conexión. Intenta más tarde.';
+                    feedback.className = "text-center text-lg font-medium text-red-400 mt-4";
+                    console.error('Error:', error);
                 });
             });
         });
