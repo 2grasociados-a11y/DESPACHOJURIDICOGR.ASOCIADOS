@@ -342,26 +342,26 @@
                     <h2 class="text-4xl font-extrabold text-gray-100 section-header-glow">Agenda tu Consulta</h2>
                    <p class="mt-4 text-lg text-gray-300">Garantizamos absoluta confidencialidad desde el primer contacto. Envíenos un mensaje y nos comunicaremos a la brevedad.</p>
                      
-                    <!-- ===== FORMULARIO CORREGIDO: SE QUITÓ EL ID Y EL DIV DE ESTADO. AHORA DEPENDE 100% DE FORMSUBMIT PARA EL ENVÍO Y LA REDIRECCIÓN. ===== -->
+                    <!-- El formulario utiliza el método POST nativo del navegador, esencial para que FormSubmit active la auto-respuesta y la redirección. -->
                    <form action="https://formsubmit.co/2g.r.asociados@gmail.com" method="POST" class="mt-8 grid grid-cols-1 gap-y-6">
                         
                         <!-- --- CONFIGURACIÓN DE FORMSUBMIT --- -->
                         <!-- 1. Asunto para TI -->
                        <input type="hidden" name="_subject" value="Nuevo Mensaje de GudiñoRetana & Asociados">
                         
-                        <!-- 2. Auto-respuesta para el CLIENTE (Esto ahora funcionará correctamente) -->
+                        <!-- 2. Auto-respuesta para el CLIENTE (Revisar la carpeta de Spam) -->
                        <input type="hidden" name="_autoresponse" value="¡Gracias por contactarnos! Hemos recibido tu mensaje y te responderemos a la brevedad. - GudiñoRetana & Asociados">
  
-                        <!-- 3. DESACTIVAR CAPTCHA (Permanece) -->
+                        <!-- 3. DESACTIVAR CAPTCHA -->
                        <input type="hidden" name="_captcha" value="false">
                         
-                        <!-- 4. PÁGINA DE "GRACIAS" (Esto ahora funcionará correctamente) -->
+                        <!-- 4. PÁGINA DE "GRACIAS" (Redirección) -->
                        <input type="hidden" name="_next" value="https://2grasociados-a11y.github.io/Despacho-juridico-Gudi-oRetana-Asociados/">
                         <!-- --- FIN DE CONFIGURACIÓN --- -->
  
                         <div>
                            <label for="full-name" class="sr-only">Nombre Completo</label>
-                            <!-- Se usa name="name" para compatibilidad estándar -->
+                            <!-- El campo 'email' es clave para el auto-responder de FormSubmit -->
                            <input type="text" name="name" id="full-name" autocomplete="name" class="block w-full shadow-md py-4 px-6 placeholder-gray-400 border rounded-xl transition duration-300 bg-gray-800 text-white border-amber-500/50 shadow-xl shadow-amber-500/25 focus:ring-amber-400 focus:border-amber-400 focus:shadow-2xl focus:shadow-amber-500/50" placeholder="Nombre Completo" required>
                         </div>
                         <div>
@@ -371,7 +371,7 @@
                         </div>
                         <div>
                            <label for="phone" class="sr-only">Teléfono</label>
-                           <input id="phone" name="phone" type="tel" autocomplete="tel" class="block w-full shadow-md py-4 px-6 placeholder-gray-400 border rounded-xl transition duration-300 bg-gray-800 text-white border-amber-500/50 shadow-xl shadow-amber-500/25 focus:ring-amber-400 focus:border-amber-400 focus:shadow-2xl focus:shadow-amber-500/50" placeholder="Teléfono (Recomendado para pronta respuesta)">
+                           <input id="phone" name="phone" type="tel" autocomplete="tel" class="block w-full shadow-md py-4 px-6 placeholder-gray-400 border rounded-xl transition duration-300 bg-gray-800 text-white border-amber-500/50 shadow-xl shadow-amber-500/25 focus:ring-amber-400 focus:border-amber-400 focus:focus:shadow-2xl focus:shadow-amber-500/50" placeholder="Teléfono (Recomendado para pronta respuesta)">
                         </div>
                         <div>
                            <label for="message" class="sr-only">Mensaje</label>
@@ -451,6 +451,3 @@
  
 </body>
 </html>
-    <script src="https://cdn.botpress.cloud/webchat/v3.4/inject.js"></script>
-<script src="https://files.bpcontent.cloud/2025/11/15/05/20251115053833-IMS2K3PO.js" defer></script>
-
