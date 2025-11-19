@@ -22,7 +22,6 @@
             font-family: 'Inter', sans-serif;
             scroll-behavior: smooth;
             /* Fondo Marmoleado Oscuro (Efecto Vidrio Esmerilado) */
-            /* Inspirado en la textura del logo */
             background-color: #111827; /* gray-900 */
             background-image:
                 /* Simulación de textura de mármol muy sutil */
@@ -239,7 +238,7 @@
            <div>
                 <h2 class="text-4xl font-extrabold tracking-tight text-gray-100 sm:text-5xl section-header-glow">Sobre Nosotros</h2>
                 <p class="mt-4 text-lg text-gray-300 text-justify">
-                    GudiñoRetana & Asociados fue forjada a partir del propósito claro de su fundador: un despacho jurídico donde la audacia estratégica y la excelencia técnica convivieran con la más estricta discreción y el deber humano. Desde su origen, cimentamos nuestra práctica en dos pilares: el dominio del litigio de alta complejidad--defensa penal, juicio de amparo penal , derecho civil y familiar— y la convicción de que la verdadera defensa exige una confianza absoluta. Esta filosofía ha guiado la formación de nuestro equipo; profesionales dedicados a proteger el la familia, patrimonio y libertad como ejes rectores de la sociedad.
+                    GudiñoRetana & Asociados fue forjada a partir del propósito claro de su fundador: un despacho jurídico donde la audacia estratégica y la excelencia técnica convivieran con la más estricta discreción y el deber humano. Desde su origen, cimentamos nuestra práctica en dos pilares: el dominio del litigio de alta complejidad--defensa penal, juicio de amparo penal , derecho civil y familiar— y la convicción de que la verdadera defensa exige una confianza absoluta. Esta filosofía ha guiada la formación de nuestro equipo; profesionales dedicados a proteger el la familia, patrimonio y libertad como ejes rectores de la sociedad.
                </p>
            </div>
  
@@ -342,31 +341,27 @@
                     <h2 class="text-4xl font-extrabold text-gray-100 section-header-glow">Agenda tu Consulta</h2>
                    <p class="mt-4 text-lg text-gray-300">Garantizamos absoluta confidencialidad desde el primer contacto. Envíenos un mensaje y nos comunicaremos a la brevedad.</p>
                      
-                    <!-- El formulario utiliza el método POST nativo del navegador, esencial para que FormSubmit active la auto-respuesta y la redirección. -->
-                   <form action="https://formsubmit.co/2g.r.asociados@gmail.com" method="POST" class="mt-8 grid grid-cols-1 gap-y-6">
+                    <!-- FORMULARIO: Usa el método POST nativo (requerido para la auto-respuesta de FormSubmit) -->
+                   <form id="contact-form" action="https://formsubmit.co/2g.r.asociados@gmail.com" method="POST" class="mt-8 grid grid-cols-1 gap-y-6">
                         
-                        <!-- --- CONFIGURACIÓN DE FORMSUBMIT --- -->
                         <!-- 1. Asunto para TI -->
                        <input type="hidden" name="_subject" value="Nuevo Mensaje de GudiñoRetana & Asociados">
                         
-                        <!-- 2. Auto-respuesta para el CLIENTE (Revisar la carpeta de Spam) -->
+                        <!-- 2. Auto-respuesta (Requerida para la auto-respuesta) -->
                        <input type="hidden" name="_autoresponse" value="¡Gracias por contactarnos! Hemos recibido tu mensaje y te responderemos a la brevedad. - GudiñoRetana & Asociados">
  
-                        <!-- 3. DESACTIVAR CAPTCHA -->
-                       <input type="hidden" name="_captcha" value="false">
+                        <!-- 3. Redirección (FormSubmit lo gestiona) -->
+                       <input type="hidden" name="_next" value="https://2grasociados-a11y.github.io/Despacho-juridico-Gudi-oRetana-Asociados/?success=true#contacto">
                         
-                        <!-- 4. PÁGINA DE "GRACIAS" (Redirección) -->
-                       <input type="hidden" name="_next" value="https://2grasociados-a11y.github.io/Despacho-juridico-Gudi-oRetana-Asociados/">
-                        <!-- --- FIN DE CONFIGURACIÓN --- -->
+                        <!-- 4. Desactivación del CAPTCHA (Requerido por FormSubmit, a veces lo pide una vez antes de ser desactivado) -->
+                        <input type="hidden" name="_captcha" value="false">
  
                         <div>
                            <label for="full-name" class="sr-only">Nombre Completo</label>
-                            <!-- El campo 'email' es clave para el auto-responder de FormSubmit -->
                            <input type="text" name="name" id="full-name" autocomplete="name" class="block w-full shadow-md py-4 px-6 placeholder-gray-400 border rounded-xl transition duration-300 bg-gray-800 text-white border-amber-500/50 shadow-xl shadow-amber-500/25 focus:ring-amber-400 focus:border-amber-400 focus:shadow-2xl focus:shadow-amber-500/50" placeholder="Nombre Completo" required>
                         </div>
                         <div>
                            <label for="email" class="sr-only">Email</label>
-                            <!-- name="email" es requerido por Formspree para la respuesta -->
                            <input id="email" name="email" type="email" autocomplete="email" class="block w-full shadow-md py-4 px-6 placeholder-gray-400 border rounded-xl transition duration-300 bg-gray-800 text-white border-amber-500/50 shadow-xl shadow-amber-500/25 focus:ring-amber-400 focus:border-amber-400 focus:shadow-2xl focus:shadow-amber-500/50" placeholder="Email" required>
                         </div>
                         <div>
@@ -377,6 +372,9 @@
                            <label for="message" class="sr-only">Mensaje</label>
                            <textarea id="message" name="message" rows="5" class="block w-full shadow-md py-4 px-6 placeholder-gray-400 border rounded-xl transition duration-300 bg-gray-800 text-white border-amber-500/50 shadow-xl shadow-amber-500/25 focus:ring-amber-400 focus:border-amber-400 focus:shadow-2xl focus:shadow-amber-500/50" placeholder="Describa su caso brevemente y el área de interés... (Ej: Juicio de Amparo Penal)"></textarea>
                         </div>
+ 
+                        <!-- DIV PARA MENSAJES DE ESTADO (Añadido para el mensaje de éxito) -->
+                        <div id="form-status" class="text-center text-lg font-medium mt-4"></div>
  
                          <div>
                             <!-- Botón de Enviar (Estilo Dorado) -->
@@ -449,5 +447,41 @@
         </div>
     </footer>
  
+    <!-- SCRIPT PARA GESTIONAR LA REDIRECCIÓN DE ÉXITO DE FORMSUBMIT -->
+    <script>
+        window.addEventListener("DOMContentLoaded", function() {
+            // Verifica si la URL contiene el parámetro 'success=true'
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSuccess = urlParams.get('success');
+            
+            const status = document.getElementById("form-status");
+            const form = document.getElementById("contact-form");
+ 
+            if (isSuccess === 'true') {
+                // 1. Muestra el mensaje de éxito
+                status.innerHTML = "¡Mensaje enviado con éxito! Nos comunicaremos a la brevedad.";
+                status.className = "text-center text-lg font-medium text-green-400 mt-4";
+                
+                // 2. Opcional: Si deseas, puedes intentar resetear el formulario al cargar,
+                // aunque FormSubmit ya lo haya hecho.
+                if (form) {
+                    form.reset();
+                }
+ 
+                // 3. Limpia el parámetro de éxito de la URL (para que no se muestre al refrescar)
+                history.replaceState(null, '', window.location.pathname + window.location.hash);
+ 
+                // 4. Limpiar el mensaje de estado después de 7 segundos
+                setTimeout(() => {
+                    status.innerHTML = "";
+                    status.className = "text-center text-lg font-medium mt-4";
+                }, 7000);
+            }
+        });
+    </script>
+ 
 </body>
 </html>
+   
+<script src="https://cdn.botpress.cloud/webchat/v3.4/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2025/11/15/05/20251115053833-IMS2K3PO.js" defer></script>
